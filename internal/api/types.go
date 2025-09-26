@@ -34,3 +34,22 @@ type Cost struct {
 	TotalLinesAdded    int     `json:"total_lines_added"`
 	TotalLinesRemoved  int     `json:"total_lines_removed"`
 }
+
+// TranscriptEntry represents a line in the transcript file
+type TranscriptEntry struct {
+	Type    string  `json:"type"`
+	Message Message `json:"message"`
+}
+
+// Message represents the message content in a transcript entry
+type Message struct {
+	Usage Usage `json:"usage"`
+}
+
+// Usage represents token usage information in assistant messages
+type Usage struct {
+	InputTokens              int `json:"input_tokens"`
+	CacheCreationInputTokens int `json:"cache_creation_input_tokens"`
+	CacheReadInputTokens     int `json:"cache_read_input_tokens"`
+	OutputTokens             int `json:"output_tokens"`
+}

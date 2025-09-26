@@ -1,94 +1,82 @@
-# Project Overview
+## Commands
 
-This is a Go-based status line extension for Claude Code that processes JSON input from stdin and generates formatted status information including context size and git branch details.
-
-## Build and Test Commands
+### Build and Test
 
 ```bash
-# Build the project
+# Build the status line executable
 go build
 
-# Run tests
-go test
+# Run all tests
+go test ./...
 
 # Run tests with verbose output
-go test -v
+go test -v ./...
 
-# Run a specific test
+# Run specific test
 go test -run TestFormatSize
 
 # Format code
 go fmt ./...
 
-# Clean module cache
+# Clean module cache if needed
 go clean -modcache
+```
+
+### Testing the Application
+
+```bash
+# Test with sample input
+cat interface/input.json | ./status-line
+
+# Build and test in one command
+go build && cat interface/input.json | ./status-line
 ```
 
 ## Architecture
 
-The project follows a clean architecture pattern:
+This is a Go CLI tool that generates status line information for Claude Code by processing JSON input from stdin.
 
-### Core Components
+### Core Architecture
 
-- **`main.go`**: Entry point and primary business logic
-  - `StatusLine` struct handles calculation and formatting
-  - JSON input parsing from stdin
-  - Context size calculation from transcript files
-  - Git branch detection with fallback methods
+- **Entry Point**: `main.go` reads JSON from stdin, instantiates sections, and orchestrates rendering
+- **API Layer**: `internal/api/` contains shared contracts:
+  - `types.go`: Input/output structures matching Claude Code's hook format
+  - `section.go`: Interface that all status sections must implement
+  - `theme.go`: ANSI color constants for consistent theming
+- **Sections**: `internal/sections/` contains modular status components:
+  - `context.go`: Token usage calculation and formatting
+  - `git.go`: Git branch detection with multiple fallback strategies
+  - `path.go`: Current directory display with home directory shortening
 
-- **`internal/api/`**: API contracts and data structures
-  - `types.go`: Complete JSON input structure matching Claude Code's hook format
-  - `section.go`: Interface definitions for future extensibility (currently stub)
+### Section Interface Pattern
 
-### Input Processing
+All status line components implement the `Section` interface:
 
-The application expects JSON input via stdin matching the structure defined in `internal/api/types.go`. Example input format is available in `interface/input.json`.
+```go
+type Section interface {
+    Render() string  // Returns formatted output with colors
+}
+```
 
-Key input fields:
+Each section is self-contained and responsible for:
 
-- `transcript_path`: Path to Claude Code transcript file for context size calculation
-- `workspace.current_dir` or `cwd`: Working directory for git operations
-- Additional metadata: session_id, model info, cost tracking, etc.
+- Fetching its own data based on input
+- Applying appropriate ANSI colors
+- Rendering its portion of the status line
 
-### Git Integration
+### Development Notes
 
-Git branch detection uses multiple fallback strategies:
+**Current Refactoring State**: The project has duplicate functionality during migration. When adding features, prefer implementing in the new sections-based architecture in `internal/sections/`.
 
-1. `git branch --show-current` (primary)
-2. `git symbolic-ref --short HEAD` (fallback)
-3. `git describe --tags --exact-match` (for tagged commits)
-4. `git rev-parse --short HEAD` (detached HEAD)
-
-Returns "No Git" if directory doesn't exist or isn't a git repository.
-
-### File Size Formatting
-
-Context size calculation reads entire transcript files and formats byte counts:
-
-- < 1KB: Shows exact bytes (e.g., "500B")
-- < 1MB: Shows kilobytes (e.g., "1.5K")
-- >= 1MB: Shows megabytes (e.g., "2.0M")
-
-## Testing Strategy
-
-Test files follow Go conventions with comprehensive coverage:
-
-- Unit tests for all public methods
-- Temporary file creation for integration testing
-- Edge case handling (non-existent files, empty directories)
-- Format validation for output strings
-
-## Recent Architecture Changes
-
-The project recently refactored from `internal/types` to `internal/api` package structure. When working with imports, ensure you're using:
-
-- `github.com/jhivandb/status-line/internal/api` (current)
-- Not `github.com/jhivandb/status-line/internal/types` (deprecated)
-
-## Module Information
+**Module Info**:
 
 - Module: `github.com/jhivandb/status-line`
 - Go version: 1.24.0
-- No external dependencies (uses only Go standard library)
+- Dependencies: Go standard library only
 
-### DO NOT WRITE CODE, ONLY Assist with advice and snippets ###
+# important-instruction-reminders
+
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

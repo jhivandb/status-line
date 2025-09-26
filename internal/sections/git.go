@@ -16,16 +16,8 @@ type Git struct {
 }
 
 func (g *Git) Render() string {
-	return g.getText()
-}
-
-func (g *Git) getText() string {
 	branch := getGitBranch(g.In)
-	return branch
-}
-
-func (g *Git) getStyles() string {
-	return ""
+	return fmt.Sprintf("%s%s", api.ColorTeal, branch)
 }
 
 // GetGitBranch executes git command to get the current branch
@@ -65,7 +57,7 @@ func getGitBranch(in api.InputData) string {
 		return getGitBranchFallback(workDir)
 	}
 
-	return branch
+	return fmt.Sprintf("\uf09b \ue0a0%s", branch)
 }
 
 // getGitBranchFallback tries alternative methods to get git branch info
