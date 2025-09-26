@@ -1,0 +1,4 @@
+{"type": "user", "message": {"content": "Hello, please help me with a coding problem."}}
+{"type": "assistant", "message": {"content": "I'd be happy to help you with your coding problem! What specific issue are you working on?", "usage": {"input_tokens": 1500, "cache_creation_input_tokens": 500, "cache_read_input_tokens": 250, "output_tokens": 25}}}
+{"type": "user", "message": {"content": "I need to convert some Python code to Go."}}
+{"type": "assistant", "message": {"content": "Sure, I can help you convert Python code to idiomatic Go. Please share the Python code you'd like me to convert, and I'll provide you with a Go implementation that follows Go best practices and conventions.", "usage": {"input_tokens": 2000, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 800, "output_tokens": 45}}}
